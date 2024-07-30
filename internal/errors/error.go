@@ -1,6 +1,7 @@
 package errors
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -30,6 +31,7 @@ func HandleError(ctx *gin.Context, err error) {
 
 	switch reqErr.code {
 	case http.StatusInternalServerError:
+		log.Printf("[ERROR] %s", reqErr.message)
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Service Error"})
 	default:
 		ctx.JSON(reqErr.code, gin.H{"error": reqErr.message})
