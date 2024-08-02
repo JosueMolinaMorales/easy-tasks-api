@@ -100,3 +100,15 @@ func GetUserByUsername(username string) (*types.User, error) {
 
 	return user, nil
 }
+
+func CreateTask(newTask *types.Task) error {
+	stmt, err := db.Prepare(`INSERT INTO Tasks(id, title, description, due_date, priority, status, created_at, updated_at) VALUES($1, $2, $3, $4, $5, $6, $7, $8);`)
+	if err != nil {
+		return err
+	}
+	_, err = stmt.Exec(newTask.ID, newTask.Title, newTask.Description, newTask.DueDate, newTask.Priority, newTask.Status, newTask.CreatedAt, newTask.UpdatedAt)
+	if err != nil {
+		return err
+	}
+	return nil
+}
