@@ -101,12 +101,38 @@ func GetUserByUsername(username string) (*types.User, error) {
 	return user, nil
 }
 
+func GetUserByID(id string) (*types.User, error) {
+	stmt, err := db.Prepare(`SELECT id, firstname, lastname, email, username, password FROM users WHERE id=$1`)
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := stmt.Query(id)
+	if err != nil {
+		return nil, err
+	}
+
+	defer res.Close()
+	user := &types.User{}
+	nextVal := res.Next()
+	if !nextVal {
+		return nil, nil
+	}
+
+	err = res.Scan(&user.ID, &user.FirstName, &user.LastName, &user.Email, &user.Username, &user.Password)
+	if err != nil {
+		return nil, err
+	}
+
+	return user, nil
+}
+
 func CreateTask(newTask *types.Task) error {
-	stmt, err := db.Prepare(`INSERT INTO Tasks(id, title, description, due_date, priority, status, created_at, updated_at) VALUES($1, $2, $3, $4, $5, $6, $7, $8);`)
+	stmt, err := db.Prepare(`INSERT INTO Tasks(id, title, description, due_date, priority, status, created_at, updated_at, author) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9);`)
 	if err != nil {
 		return err
 	}
-	_, err = stmt.Exec(newTask.ID, newTask.Title, newTask.Description, newTask.DueDate, newTask.Priority, newTask.Status, newTask.CreatedAt, newTask.UpdatedAt)
+	_, err = stmt.Exec(newTask.ID, newTask.Title, newTask.Description, newTask.DueDate, newTask.Priority, newTask.Status, newTask.CreatedAt, newTask.UpdatedAt, newTask.Author)
 	if err != nil {
 		return err
 	}

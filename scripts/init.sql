@@ -9,11 +9,13 @@ CREATE TABLE Users (
 
 CREATE TABLE Tasks (
     ID TEXT PRIMARY KEY,
+    author TEXT NOT NULL,
     title TEXT NOT NULL,
     description TEXT NOT NULL,
     due_date TEXT NOT NULL,
     priority TEXT NOT NULL,
     status TEXT NOT NULL,
     created_at TIMESTAMPTZ NOT NULL,
-    updated_at TIMESTAMPTZ NOT NULL
+    updated_at TIMESTAMPTZ NOT NULL,
+    FOREIGN KEY (author) REFERENCES Users(ID)
 );

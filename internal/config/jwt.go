@@ -1,27 +1,28 @@
 package config
 
 import (
+	"fmt"
+	"net/http"
 	"time"
 
+	"github.com/JosueMolinaMorales/EasyTasksAPI/internal/errors"
+	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 )
 
 type Claims struct {
-	UserID    string           `json:"userId"`
-	ExpiresAt *jwt.NumericDate `json:"exp"`
-	IssuedAt  *jwt.NumericDate `json:"iat"`
-	NotBefore *jwt.NumericDate `json:"nbf,omitempty"`
-	Issuer    string           `json:"iss"`
-	Subject   string           `json:"sub,omitempty"`
-	Audience  jwt.ClaimStrings `json:"aud,omitempty"`
+	UserID string `json:"userId"`
+	jwt.RegisteredClaims
 }
 
 func NewClaims(userID string) *Claims {
 	return &Claims{
-		UserID:    userID,
-		ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 24)),
-		IssuedAt:  jwt.NewNumericDate(time.Now()),
-		Issuer:    "EasyTasksAPI",
+		UserID: userID,
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 24)),
+			IssuedAt:  jwt.NewNumericDate(time.Now()),
+			Issuer:    "EasyTasksAPI",
+		},
 	}
 }
 
@@ -58,4 +59,32 @@ func (c *Claims) SignToken() (string, error) {
 	}
 
 	return signed, nil
+}
+
+func VerifyToken(tokenStr string) (*Claims, error) {
+	token, err := jwt.ParseWithClaims(tokenStr, &Claims{}, func(t *jwt.Token) (interface{}, error) {
+		// hmacSampleSecret is a []byte containing your secret, e.g. []byte("my_secret_key")
+		return []byte("secret"), nil
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	claims, ok := token.Claims.(*Claims)
+	if !ok {
+		fmt.Println("could not parse claims")
+	}
+
+	return claims, nil
+}
+
+func ExtractIDFromToken(ctx *gin.Context) (string, *errors.RequestError) {
+	tokenAny, ok := ctx.Get("Token")
+	if !ok {
+		return "", errors.NewRequestError(http.StatusInternalServerError, "No token found")
+	}
+	token := tokenAny.(*Claims)
+	author := token.UserID
+
+	return author, nil
 }
