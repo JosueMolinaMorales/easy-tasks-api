@@ -1,0 +1,25 @@
+meta {
+  name: Create Task
+  type: http
+  seq: 2
+}
+
+post {
+  url: http://localhost:3000/tasks
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjMTllYmU2MC1mZjYxLTRmNTYtYmQ4Yi1iNDQ2MmE1YjQyZmYiLCJpc3MiOiJFYXN5VGFza3NBUEkiLCJleHAiOjE3MjI4NzYwMTIsImlhdCI6MTcyMjc4OTYxMn0.qZZJTUhRw1zv4aqJFtJlQiggVOt6Wu6gWaQQkPj2vrA
+}
+
+body:json {
+  {
+    "title": "test title",
+    "description": "test description",
+    "priority": "low",
+    "status": "pending",
+    "due_date": 1727850280
+  }
+}
