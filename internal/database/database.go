@@ -138,3 +138,28 @@ func CreateTask(newTask *types.Task) error {
 	}
 	return nil
 }
+
+func GetTasks(userId string) ([]*types.Task, error) {
+	stmt, err := db.Prepare(`SELECT id, title, description, due_date, priority, status, created_at, updated_at, author FROM tasks WHERE author = $1`)
+	if err != nil {
+		return nil, err
+	}
+
+	rows, err := stmt.Query(userId)
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+	tasks := []*types.Task{}
+	for rows.Next() {
+		t := &types.Task{}
+		err := rows.Scan(&t.ID, &t.Title, &t.Description, &t.DueDate, &t.Priority, &t.Status, &t.CreatedAt, &t.UpdatedAt, &t.Author)
+		if err != nil {
+			return nil, err
+		}
+		tasks = append(tasks, t)
+	}
+
+	return tasks, nil
+}

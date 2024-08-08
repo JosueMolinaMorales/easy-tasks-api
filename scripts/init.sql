@@ -12,7 +12,7 @@ CREATE TABLE Tasks (
     author TEXT NOT NULL,
     title TEXT NOT NULL,
     description TEXT NOT NULL,
-    due_date TEXT NOT NULL,
+    due_date TIMESTAMPTZ NOT NULL,
     priority TEXT NOT NULL,
     status TEXT NOT NULL,
     created_at TIMESTAMPTZ NOT NULL,
