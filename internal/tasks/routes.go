@@ -16,6 +16,8 @@ func BuildTaskRoutes(r *gin.Engine) {
 	tasksGroup.Use(middleware.AuthMiddleware)
 	// create tasks
 	tasksGroup.POST("", createTasksHandler)
+	// getting tasks
+	tasksGroup.GET("", getTasksHandler)
 }
 
 func createTasksHandler(ctx *gin.Context) {
@@ -39,5 +41,24 @@ func createTasksHandler(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusCreated, gin.H{
 		"id": id,
+	})
+}
+
+func getTasksHandler(ctx *gin.Context) {
+	// Get the userID of the author
+	author, err := config.ExtractIDFromToken(ctx)
+	if err != nil {
+		errors.HandleError(ctx, err)
+		return
+	}
+
+	tasks, err := getTasks(author)
+	if err != nil {
+		errors.HandleError(ctx, err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"tasks": tasks,
 	})
 }

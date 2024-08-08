@@ -61,3 +61,21 @@ func createTask(author string, newTask *types.CreateTask) (string, *errors.Reque
 
 	return id, nil
 }
+
+func getTasks(author string) ([]*types.Task, *errors.RequestError) {
+	// Validate the user exists
+	user, err := database.GetUserByID(author)
+	if err != nil {
+		return nil, errors.NewRequestError(http.StatusInternalServerError, fmt.Sprintf("Failed to get user: %s", err.Error()))
+	}
+	if user == nil {
+		return nil, errors.NewRequestError(http.StatusNotFound, "User not found")
+	}
+
+	tasks, err := database.GetTasks(author)
+	if err != nil {
+		return nil, errors.NewRequestError(http.StatusInternalServerError, fmt.Sprintf("Failed to get tasks: %s", err.Error()))
+	}
+
+	return tasks, nil
+}

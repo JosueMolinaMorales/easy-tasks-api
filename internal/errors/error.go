@@ -25,6 +25,7 @@ func (re RequestError) Error() string {
 func HandleError(ctx *gin.Context, err error) {
 	reqErr, ok := err.(*RequestError)
 	if !ok {
+		log.Printf("[ERROR] Could not convert error to request error: %T (%s)", err, err.Error())
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Service Error"})
 		return
 	}
