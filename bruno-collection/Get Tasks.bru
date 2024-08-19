@@ -1,25 +1,15 @@
 meta {
-  name: Create Task
+  name: Get Tasks
   type: http
-  seq: 2
+  seq: 5
 }
 
-post {
+get {
   url: http://localhost:3000/tasks
-  body: json
+  body: none
   auth: bearer
 }
 
 auth:bearer {
   token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjYjBlYzU4Yy0yOTJlLTQyM2YtYjlkZC1kZGNmMjQ2Y2JkZWQiLCJpc3MiOiJFYXN5VGFza3NBUEkiLCJleHAiOjE3MjM0MDgyNTQsImlhdCI6MTcyMzMyMTg1NH0.raTNVFSYGnfsDPy0Qm8FWlGA-IQEVa-RkASFwoTna7k
-}
-
-body:json {
-  {
-    "title": "Get Engagement Ring",
-    "description": "Need to go to the jewler and get engagement ring  ",
-    "priority": "low",
-    "status": "pending",
-    "due_date": 1727850280
-  }
 }

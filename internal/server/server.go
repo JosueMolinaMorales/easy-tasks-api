@@ -10,13 +10,18 @@ import (
 )
 
 func RunServer() {
+	r := BuildRouter()
+	r.Run("0.0.0.0:3000") // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
+}
+
+func BuildRouter() *gin.Engine {
 	r := gin.Default()
 
 	welcomeRoute(r)
 	auth.BuildAuthRoutes(r)
 	tasks.BuildTaskRoutes(r)
 
-	r.Run("0.0.0.0:3000") // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
+	return r
 }
 
 func welcomeRoute(r *gin.Engine) {

@@ -58,7 +58,5 @@ func getTasksHandler(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{
-		"tasks": tasks,
-	})
+	ctx.JSON(http.StatusOK, tasks)
 }

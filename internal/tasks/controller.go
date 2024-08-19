@@ -47,11 +47,11 @@ func createTask(author string, newTask *types.CreateTask) (string, *errors.Reque
 		Author:      author,
 		Title:       newTask.Title,
 		Description: newTask.Description,
-		DueDate:     dueDate,
+		DueDate:     newTask.DueDate,
 		Priority:    newTask.Priority,
 		Status:      newTask.Status,
-		CreatedAt:   createdAt,
-		UpdatedAt:   createdAt,
+		CreatedAt:   int(createdAt.Unix()),
+		UpdatedAt:   int(createdAt.Unix()),
 	}
 
 	err = database.CreateTask(task)

@@ -4,8 +4,10 @@ import (
 	"database/sql"
 	"log"
 	"strings"
+	"time"
 
 	"github.com/JosueMolinaMorales/EasyTasksAPI/internal/types"
+	"github.com/JosueMolinaMorales/EasyTasksAPI/pkg/env"
 	"github.com/google/uuid"
 	_ "github.com/lib/pq"
 )
@@ -18,9 +20,8 @@ INSERT INTO Users(firstname, lastname, username, id, password, email) VALUES($1,
 
 // This function will make a connection to the database only once.
 func init() {
-	connStr := "postgres://postgres:password@localhost:5432/easy-tasks?sslmode=disable" // TODO: Make this an env var
 	var err error
-	db, err = sql.Open("postgres", connStr)
+	db, err = sql.Open("postgres", env.GetDBURI())
 	if err != nil {
 		panic(err)
 	}
@@ -132,7 +133,7 @@ func CreateTask(newTask *types.Task) error {
 	if err != nil {
 		return err
 	}
-	_, err = stmt.Exec(newTask.ID, newTask.Title, newTask.Description, newTask.DueDate, newTask.Priority, newTask.Status, newTask.CreatedAt, newTask.UpdatedAt, newTask.Author)
+	_, err = stmt.Exec(newTask.ID, newTask.Title, newTask.Description, time.Unix(int64(newTask.DueDate), 0), newTask.Priority, newTask.Status, time.Unix(int64(newTask.CreatedAt), 0), time.Unix(int64(newTask.UpdatedAt), 0), newTask.Author)
 	if err != nil {
 		return err
 	}
@@ -154,10 +155,16 @@ func GetTasks(userId string) ([]*types.Task, error) {
 	tasks := []*types.Task{}
 	for rows.Next() {
 		t := &types.Task{}
-		err := rows.Scan(&t.ID, &t.Title, &t.Description, &t.DueDate, &t.Priority, &t.Status, &t.CreatedAt, &t.UpdatedAt, &t.Author)
+		var dueDate time.Time
+		var createdAt time.Time
+		var updatedAt time.Time
+		err := rows.Scan(&t.ID, &t.Title, &t.Description, &dueDate, &t.Priority, &t.Status, &createdAt, &updatedAt, &t.Author)
 		if err != nil {
 			return nil, err
 		}
+		t.DueDate = int(dueDate.Unix())
+		t.CreatedAt = int(createdAt.Unix())
+		t.UpdatedAt = int(updatedAt.Unix())
 		tasks = append(tasks, t)
 	}
 

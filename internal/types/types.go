@@ -1,7 +1,5 @@
 package types
 
-import "time"
-
 type User struct {
 	ID        string
 	FirstName string
@@ -13,8 +11,8 @@ type User struct {
 
 type AuthUser struct {
 	ID        string `json:"id"`
-	FirstName string `json:"firstname"`
-	LastName  string `json:"lastname"`
+	FirstName string `json:"first_name"`
+	LastName  string `json:"last_name"`
 	Username  string `json:"username"`
 	Email     string `json:"email"`
 }
@@ -44,15 +42,15 @@ const (
 )
 
 type Task struct {
-	ID          string    `json:"id"`
-	Author      string    `json:"author"`
-	Title       string    `json:"title"`
-	Description string    `json:"description"`
-	DueDate     time.Time `json:"due_date"`
-	Priority    Priority  `json:"priority"`
-	Status      Status    `json:"status"`
-	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
+	ID          string   `json:"id"`
+	Author      string   `json:"author"`
+	Title       string   `json:"title"`
+	Description string   `json:"description"`
+	DueDate     int      `json:"due_date"`
+	Priority    Priority `json:"priority"`
+	Status      Status   `json:"status"`
+	CreatedAt   int      `json:"created_at"`
+	UpdatedAt   int      `json:"updated_at"`
 }
 
 type CreateTask struct {
