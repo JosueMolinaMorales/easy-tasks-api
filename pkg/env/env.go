@@ -4,6 +4,8 @@ import (
 	"log"
 	"os"
 	"strings"
+
+	"github.com/joho/godotenv"
 )
 
 const (
@@ -14,6 +16,7 @@ var envVars map[string]string
 
 func init() {
 	log.Printf("[DEBUG] Loading Environment Variables")
+
 	// Load Environment Variables
 	envVars = map[string]string{}
 	envs := os.Environ()
@@ -22,6 +25,16 @@ func init() {
 		envVars[split[0]] = split[1]
 	}
 	log.Printf("[DEBUG] Environment variables loaded")
+
+	log.Printf("[DEBUG] Environment variables loading from .env")
+	env, err := godotenv.Read()
+	if err != nil {
+		log.Printf("[WARNING] Error loading .env file: %s", err.Error())
+	} else {
+		for k, v := range env {
+			envVars[k] = v
+		}
+	}
 }
 
 func Get(key string) string {

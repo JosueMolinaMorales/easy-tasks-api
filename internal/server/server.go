@@ -2,10 +2,12 @@ package server
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/JosueMolinaMorales/EasyTasksAPI/internal/auth"
 	_ "github.com/JosueMolinaMorales/EasyTasksAPI/internal/database"
 	"github.com/JosueMolinaMorales/EasyTasksAPI/internal/tasks"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
@@ -16,7 +18,19 @@ func RunServer() {
 
 func BuildRouter() *gin.Engine {
 	r := gin.Default()
-
+	// CORS for https://foo.com and https://github.com origins, allowing:
+	// - PUT and PATCH methods
+	// - Origin header
+	// - Credentials share
+	// - Preflight requests cached for 12 hours
+	r.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"*"},
+		AllowMethods:     []string{"*"},
+		AllowHeaders:     []string{"Origin", "Authorization", "Content-Type"},
+		ExposeHeaders:    []string{"*"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
+	}))
 	welcomeRoute(r)
 	auth.BuildAuthRoutes(r)
 	tasks.BuildTaskRoutes(r)

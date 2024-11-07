@@ -37,8 +37,8 @@ type Priority string
 
 const (
 	PriorityLow    Priority = "low"
-	PriorityMedium Priority = "Medium"
-	PriorityHigh   Priority = "High"
+	PriorityMedium Priority = "medium"
+	PriorityHigh   Priority = "high"
 )
 
 type Task struct {

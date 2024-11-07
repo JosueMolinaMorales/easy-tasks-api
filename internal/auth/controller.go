@@ -9,12 +9,14 @@ import (
 	"github.com/JosueMolinaMorales/EasyTasksAPI/internal/database"
 	"github.com/JosueMolinaMorales/EasyTasksAPI/internal/errors"
 	"github.com/JosueMolinaMorales/EasyTasksAPI/internal/types"
+	"github.com/JosueMolinaMorales/EasyTasksAPI/internal/utils"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type authResponse struct {
-	Token string          `json:"token"`
-	User  *types.AuthUser `json:"user"`
+	Token       string          `json:"token"`
+	User        *types.AuthUser `json:"user"`
+	GravatarURL string          `json:"gravatar_url"`
 }
 
 func registerUser(newUser *types.RegisterUser) (*authResponse, *errors.RequestError) {
@@ -66,6 +68,7 @@ func registerUser(newUser *types.RegisterUser) (*authResponse, *errors.RequestEr
 			Username:  newUser.Username,
 			Email:     newUser.Email,
 		},
+		GravatarURL: utils.NewGravatarFromEmail(newUser.Email).GetURL(),
 	}, nil
 }
 
@@ -84,6 +87,9 @@ func login(loginInfo *loginInfo) (*authResponse, error) {
 	}
 
 	if err != nil {
+		return nil, errors.NewRequestError(http.StatusInternalServerError, fmt.Sprintf("Failed to get user: %s", err.Error()))
+	}
+	if user == nil {
 		return nil, errors.NewRequestError(http.StatusBadRequest, "Username/Email or password is incorrect")
 	}
 
@@ -110,5 +116,6 @@ func login(loginInfo *loginInfo) (*authResponse, error) {
 			Email:     user.Email,
 			Username:  user.Username,
 		},
+		GravatarURL: utils.NewGravatarFromEmail(user.Email).GetURL(),
 	}, nil
 }
