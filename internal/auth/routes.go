@@ -6,6 +6,7 @@ import (
 
 	"github.com/JosueMolinaMorales/EasyTasksAPI/internal/errors"
 	"github.com/JosueMolinaMorales/EasyTasksAPI/internal/types"
+	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 )
 
@@ -15,10 +16,26 @@ type loginInfo struct {
 	Password string `json:"password,omitempty"`
 }
 
-func BuildAuthRoutes(r *gin.Engine) {
+func BuildAuthRoutes(r *gin.Engine, authenticator *Authenticator) {
 	authRoutes := r.Group("/auth")
 	authRoutes.POST("/users", registerHandler)
-	authRoutes.POST("/login", loginHandler)
+	authRoutes.GET("/user", isLoggedIn)
+	authRoutes.GET("/login", LoginHandler(authenticator))
+	authRoutes.GET("/callback", CallbackHandler(authenticator))
+}
+
+func isLoggedIn(ctx *gin.Context) {
+	session := sessions.Default(ctx)
+	profile := session.Get("profile")
+
+	if profile == nil {
+		ctx.JSON(http.StatusNotFound, gin.H{
+			"status": "Not logged in",
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, profile)
 }
 
 func registerHandler(ctx *gin.Context) {

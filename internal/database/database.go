@@ -22,6 +22,8 @@ INSERT INTO Users(firstname, lastname, username, id, password, email) VALUES($1,
 func init() {
 	var err error
 	db, err = sql.Open("postgres", env.GetDBURI())
+
+	log.Printf("[DEBUG] DB URI: ", env.GetDBURI())
 	if err != nil {
 		panic(err)
 	}

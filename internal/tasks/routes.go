@@ -2,9 +2,9 @@ package tasks
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 
-	"github.com/JosueMolinaMorales/EasyTasksAPI/internal/config"
 	"github.com/JosueMolinaMorales/EasyTasksAPI/internal/errors"
 	"github.com/JosueMolinaMorales/EasyTasksAPI/internal/middleware"
 	"github.com/JosueMolinaMorales/EasyTasksAPI/internal/types"
@@ -27,13 +27,14 @@ func createTasksHandler(ctx *gin.Context) {
 		return
 	}
 	// Get the userID of the author
-	author, err := config.ExtractIDFromToken(ctx)
-	if err != nil {
-		errors.HandleError(ctx, err)
+	profile := ctx.GetStringMap(middleware.PROFILE_KEY)
+	if profile == nil {
+		errors.HandleError(ctx, errors.NewRequestError(http.StatusUnauthorized, "Not Logged In"))
 		return
 	}
 
-	id, err := createTask(author, &newTask)
+	log.Printf("[DEBUG] sub : %s", profile["sub"])
+	id, err := createTask(profile["sub"].(string), &newTask)
 	if err != nil {
 		errors.HandleError(ctx, err)
 		return
@@ -46,12 +47,15 @@ func createTasksHandler(ctx *gin.Context) {
 
 func getTasksHandler(ctx *gin.Context) {
 	// Get the userID of the author
-	author, err := config.ExtractIDFromToken(ctx)
-	if err != nil {
-		errors.HandleError(ctx, err)
+	profile := ctx.GetStringMap(middleware.PROFILE_KEY)
+	if profile == nil {
+		errors.HandleError(ctx, errors.NewRequestError(http.StatusUnauthorized, "Not Logged In"))
 		return
 	}
 
+	log.Printf("[DEBUG] sub : %s", profile["sub"])
+
+	author := profile["sub"].(string)
 	tasks, err := getTasks(author)
 	if err != nil {
 		errors.HandleError(ctx, err)
